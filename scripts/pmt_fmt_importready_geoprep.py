@@ -52,16 +52,16 @@ jurisLu['juris'] = jurisLu['juris'].str.upper()
 jurisLu['plc'] = jurisLu['plc'].astype(str).apply('{0:0>5}'.format)
 
 masterPmt = pd.read_excel(os.path.join(refPath, master))
-pKin = pd.read_excel(os.path.join(refPath, 'gKIN17.xlsx'))
-pKit = pd.read_excel(os.path.join(refPath, 'gKIT17.xlsx'))
-pPrc = pd.read_excel(os.path.join(refPath, 'gPRC17.xlsx'))
-pSno = pd.read_excel(os.path.join(refPath, 'gSNO17.xlsx'))
+pKin = pd.read_excel(os.path.join(refPath, 'gKIN17.xlsx'), header = 0, keep_default_na=False)
+pKit = pd.read_excel(os.path.join(refPath, 'gKIT17.xlsx'), header = 0, keep_default_na=False)
+pPrc = pd.read_excel(os.path.join(refPath, 'gPRC17.xlsx'), header = 0, keep_default_na=False)
+pSno = pd.read_excel(os.path.join(refPath, 'gSNO17.xlsx'), header = 0, keep_default_na=False)
 
 pKin['PIN'] = pKin['PIN'].astype(str)
 pKin['PIN'] = pKin['PIN'].apply(trim_fraction)
 for i in range(len(pKin.index)):
     p = pKin.loc[pKin.index[i], 'PIN']
-    if p == 'nan':
+    if p == 'nan' or p == '':
         pKin.set_value(pKin.index[i], 'PIN', '')
     else:
         if len(p) < 10:
@@ -72,7 +72,7 @@ pPrc['PIN'] = pPrc['PIN'].astype(str)
 pPrc['PIN'] = pPrc['PIN'].apply(trim_fraction)
 for i in range(len(pPrc.index)):
     p1 = pPrc.loc[pPrc.index[i], 'PIN']
-    if p1 == 'nan':
+    if p1 == 'nan' or p1 == '':
         pPrc.set_value(pPrc.index[i], 'PIN', '')
     else:
         if len(p1) < 10:
@@ -83,7 +83,7 @@ pKit['PIN'] = pKit['PIN'].astype(str)
 pKit['PIN'] = pKit['PIN'].apply(trim_fraction)
 for i in range(len(pKit.index)):
     p2 = pKit.loc[pKit.index[i], 'PIN']
-    if p2 == 'nan':
+    if p2 == 'nan'or p2 == '':
         pKit.set_value(pKit.index[i], 'PIN', '')
     else:
         if len(p2) < 14:
@@ -94,8 +94,8 @@ pSno['PIN'] = pSno['PIN'].astype(str)
 pSno['PIN'] = pSno['PIN'].apply(trim_fraction)
 for i in range(len(pSno.index)):
     p3 = pSno.loc[pSno.index[i], 'PIN']
-    if p3 == 'nan':
-        pSno.set_value(pSno.index[i], 'PIN', '')
+    if p3 == 'nan' or p3 == '':
+        pSno.set_value(pSno.index[i], 'PIN', '0000000000000')
     else:
         if len(p3) < 14:
             pform3 = '{0:0>14}'.format(p3)
@@ -110,31 +110,33 @@ for file in fullList:
         jurisFiles.append(file)
 
 jurisCompleted = os.listdir(outDir1)
-#jurisFilesTest = jurisFiles[0:3] #####test
 juris2Process = [afile for afile in jurisFiles if afile not in jurisCompleted]
 
 for afile in juris2Process:
-    df = pd.read_excel(os.path.join(inDir, afile), header = 0)
+    df = pd.read_excel(os.path.join(inDir, afile), keep_default_na=False, header = 0)
     df = df.sort_values(by = 'SORT', ascending=True) #sort table
-    
+
     # update PIN with leading zeros
-    cnty = afile[:3]   
+    cnty = afile[:3]
+    
     if (cnty == '033' or cnty == '053' and df['PIN'][0] > 10) or (cnty == '035' and df['PIN'][0] > 14):
         df['PIN'] = df['PIN'].astype(str)
-        df['PIN'] = df['PIN'].apply(trim_fraction)
-        for i in range(len(df.index)):
-            p = df.loc[df.index[i], 'PIN']
-            if p == 'nan':
-                df.set_value(df.index[i], 'PIN', '')
+        df['PIN'] = df['PIN'].apply(trim_fraction)   
+    
+    df['PIN'] = df['PIN'].astype(str)
+    for i in range(len(df.index)):
+        pp = df.loc[df.index[i], 'PIN']
+        if pp == 'nan' or pp == '':
+            df.set_value(df.index[i], 'PIN', '')
+        else:
+            if cnty == '033' or cnty == '053':
+                if len(pp) < 10:
+                    ppform = '{0:0>10}'.format(pp)
+                    df.set_value(df.index[i], 'PIN', ppform)
             else:
-                if cnty == '033' or cnty == '053':
-                    if len(p) < 10:
-                        pform = '{0:0>10}'.format(p)
-                        df.set_value(df.index[i], 'PIN', pform)
-                else:
-                    if len(p) < 14:
-                        pform2 = '{0:0>14}'.format(p)
-                        df.set_value(df.index[i], 'PIN', pform2)
+                if len(pp) < 14:
+                    ppform2 = '{0:0>14}'.format(pp)
+                    df.set_value(df.index[i], 'PIN', ppform2)
     
     # fill in PSRCID col                                           
     for i in range(len(df.index)):
