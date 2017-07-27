@@ -115,15 +115,22 @@ juris2Process = [afile for afile in jurisFiles if afile not in jurisCompleted]
 for afile in juris2Process:
     df = pd.read_excel(os.path.join(inDir, afile), keep_default_na=False, header = 0)
     df = df.sort_values(by = 'SORT', ascending=True) #sort table
-
-    # update PIN with leading zeros
-    cnty = afile[:3]
     
+    cnty = afile[:3]
+    # update null PIN values with PIN_PARENT
+    df['PIN'] = df['PIN'].astype(str)
+    df['PIN_PARENT'] = df['PIN_PARENT'].astype(str)
+    if cnty == '061':
+        for i in range(len(df.index)):
+            if df.loc[df.index[i], 'PIN'] == '' and df.loc[df.index[i], 'PIN_PARENT'] != '':
+                updPin = df.loc[df.index[i], 'PIN_PARENT']
+                df.set_value(df.index[i], 'PIN', updPin)
+                
+    # update PIN with leading zeros
     if (cnty == '033' or cnty == '053' and df['PIN'][0] > 10) or (cnty == '035' and df['PIN'][0] > 14):
         df['PIN'] = df['PIN'].astype(str)
         df['PIN'] = df['PIN'].apply(trim_fraction)   
     
-    df['PIN'] = df['PIN'].astype(str)
     for i in range(len(df.index)):
         pp = df.loc[df.index[i], 'PIN']
         if pp == 'nan' or pp == '':
