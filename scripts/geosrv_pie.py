@@ -1,3 +1,5 @@
+# This script will parse Pierce County Parcel site addresses for use in geocoding services.
+
 import os, usaddress
 import pandas as pd
 import numpy as np
@@ -70,7 +72,6 @@ for i in range(len(df.index)): # loop through each row
         continue
     else:
         addr = df.ix[df.index[i], 'Site_Addre'] 
-#        addrParsed = set(usaddress.parse(addr)) # parse address and remove any duplicate tuples
         addrParsedOrig = usaddress.parse(addr)
         temp = []
         for a,b in addrParsedOrig :
@@ -84,6 +85,7 @@ for i in range(len(df.index)): # loop through each row
             hn = [h[0] for h in addrParsed if 'AddressNumber' in h] # isolate 'AddressNumber'
             pattern = re.compile('[A-Z]|-') # if there are alphabet or dashes detected in the 'AddressNumber'
             pattern4 = re.compile('/') # if there slash in the 'AddressNumber'
+            pattern5 = re.compile('[A-Z]')
             if (len(hn) == 0):
                 continue
             elif (len(pattern.findall(hn[0])) != 0):
@@ -91,14 +93,13 @@ for i in range(len(df.index)): # loop through each row
             else:
                 origLabels = [x[1] for x in addrParsed] # list all labels in tuples
                 if (('TO', 'StreetName') in addrParsed) | (('TO', 'StreetNamePreDirectional') in addrParsed):
-                    counts = Counter(t for t in origLabels) # evaluate # of AddressNumber and StreetName in origLabels
-                    if counts['AddressNumber'] >= 2:
-                        # compare the addressNumbers
+                    counts = Counter(t for t in origLabels) # evaluate # of labels in origLabels
+                    if counts['AddressNumber'] >= 2: # evaluate 'AddressNumber' in origLabels
                         pattern3 = re.compile('[A-Z]|-|/')
                         hns = [h for h in addrParsed if 'AddressNumber' in h]
                         hnExclude = [v for v in hns if len(pattern3.findall(v[0])) != 0]
                         exclude = []
-                        if len(hnExclude) != 0: # there something to exclude                      
+                        if len(hnExclude) != 0: # if there's something to exclude                      
                             exclude = exclude + hnExclude
                         else:
                             addNum = [an for an in addrParsed if an[1] == 'AddressNumber'][0]
@@ -112,14 +113,21 @@ for i in range(len(df.index)): # loop through each row
                         for label in labels:
                             extractValue = extractParsedAddr(addrParsedChg, label) 
                             df.set_value(df.index[i], addrDict[label], extractValue)
-#                    elif counts['StreetName'] >= 2:
-#                         strnames = [s for s in addrParsed if 'StreetName' in s]
+                    elif counts['StreetName'] >= 2: # evaluate 'StreetName' in origLabels
+                         strnames = [s for s in addrParsed if 'StreetName' in s]
+                         exStrnames = [sn for sn in strnames if len(pattern5.findall(sn[0])) == 0]
+                         exStrnames.append(('TO', 'StreetName'))
+                         addrParsedChg = [y for y in addrParsed if y not in exStrnames]
+                         labels = [x for x in origLabels if x in addrDictKey]
+                         for label in labels:
+                            extractValue = extractParsedAddr(addrParsedChg, label) 
+                            df.set_value(df.index[i], addrDict[label], extractValue)
                     else:
                         labels = [x for x in origLabels if x in addrDictKey]
                         for label in labels:
                             extractValue = extractParsedAddr(addrParsed, label) 
                             df.set_value(df.index[i], addrDict[label], extractValue)
-                elif (len(pattern4.findall(hn[0])) != 0): #('TO','SubaddressType') in addrParsed: #if TO is SubaddressType
+                elif (len(pattern4.findall(hn[0])) != 0): # evaulate if there is a '/' in the address number
                     labels = [x for x in origLabels if x in addrDictKey2]
                     for label in labels:
                         extractValue = extractParsedAddr(addrParsed, label) 
