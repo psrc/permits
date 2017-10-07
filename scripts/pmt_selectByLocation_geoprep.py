@@ -10,12 +10,12 @@ def prclDictPath(x):
     return {
         '033': 'king\parcel_address_proj.shp',
         '035': 'kitsap\parcels.shp',
-        '053': '',
+        '053': 'pierce\parcels.shp',
         '061': 'snohomish\parcels.shp',
     }[x]
 
 prclRootDir = r'J:\Projects\Geocoding\17GEOCODING\Setup\3FinalProducts'
-counties = ['033', '035', '061'] #, '053'
+counties = ['033', '035', '061', '053'] #,  
 
 workspace = r'C:\Users\CLam\Desktop\google_geo_shp'
 arcpy.env.workspace = workspace
@@ -30,11 +30,10 @@ fc = arcpy.ListFeatureClasses()
 
 for cnty in counties:
     fcSubset = [f for f in fc if cnty in f]
-#    fcSubset = [f for f in fc if "033" in f]
     if len(fcSubset) == 0:
         continue
     else:
-        parcel = os.path.join(prclRootDir, prclDictPath(cnty)) #prclDictPath('033')
+        parcel = os.path.join(prclRootDir, prclDictPath(cnty)) 
         
         for fs in fcSubset:
             # check for XY coord fields

@@ -21,12 +21,12 @@ def trim_fraction(text):
 parcelDict = {'033': 'pKin', '035': 'pKit', '053': 'pPrc', '061': 'pSno'}
 
 # Multirec dictionary
-d = {'TRUE': True, None: False, 'FALSE': False}
+d = {True: True, 'TRUE': True}#, 'FALSE': False, 'False': False
 
 # permit status dictionary
 status = {
         'ISSUED': ['OPEN', 'ACTIVE', 'issued'],
-        'FINALED': ['FINAL', 'CLOSED', 'FINALLED', 'C.O. ISSUED', 'finalled', 'final']
+        'FINALED': ['FINAL', 'CLOSED', 'FINALLED', 'C.O. ISSUED', 'finalled', 'final', 'finaled']
          }
 
 # year
@@ -62,7 +62,7 @@ pKin['PIN'] = pKin['PIN'].apply(trim_fraction)
 for i in range(len(pKin.index)):
     p = pKin.loc[pKin.index[i], 'PIN']
     if p == 'nan' or p == '':
-        pKin.set_value(pKin.index[i], 'PIN', '')
+        pKin.set_value(pKin.index[i], 'PIN', '0000000000000')
     else:
         if len(p) < 10:
             pform = '{0:0>10}'.format(p)
@@ -73,7 +73,7 @@ pPrc['PIN'] = pPrc['PIN'].apply(trim_fraction)
 for i in range(len(pPrc.index)):
     p1 = pPrc.loc[pPrc.index[i], 'PIN']
     if p1 == 'nan' or p1 == '':
-        pPrc.set_value(pPrc.index[i], 'PIN', '')
+        pPrc.set_value(pPrc.index[i], 'PIN', '0000000000000')
     else:
         if len(p1) < 10:
             pform1 = '{0:0>10}'.format(p1)
@@ -84,7 +84,7 @@ pKit['PIN'] = pKit['PIN'].apply(trim_fraction)
 for i in range(len(pKit.index)):
     p2 = pKit.loc[pKit.index[i], 'PIN']
     if p2 == 'nan'or p2 == '':
-        pKit.set_value(pKit.index[i], 'PIN', '')
+        pKit.set_value(pKit.index[i], 'PIN', '0000000000000')
     else:
         if len(p2) < 14:
             pform2 = '{0:0>14}'.format(p2)
@@ -102,7 +102,9 @@ for i in range(len(pSno.index)):
             pSno.set_value(pSno.index[i], 'PIN', pform3)
                        
 # select only files that need processing
+#dir2015 = r'J:\Projects\Permits\15Permit\geocoding\prep\00geoprep' # when working with non-current year permits
 fullList = os.listdir(inDir)
+#fullList = os.listdir(dir2015) # when working with non-current year permits
 jurisFiles = [] # store file names in 3importready
 
 for file in fullList:
@@ -112,8 +114,11 @@ for file in fullList:
 jurisCompleted = os.listdir(outDir1)
 juris2Process = [afile for afile in jurisFiles if afile not in jurisCompleted]
 
+#juris2Process = jurisFiles # when working with non-current year permits
+
 for afile in juris2Process:
     df = pd.read_excel(os.path.join(inDir, afile), keep_default_na=False, header = 0)
+#    df = pd.read_excel(os.path.join(dir2015, afile), keep_default_na=False, header = 0)
     df = df.sort_values(by = 'SORT', ascending=True) #sort table
     
     cnty = afile[:3]
@@ -155,6 +160,7 @@ for afile in juris2Process:
     
     # update Multirec field
     df['MULTIREC'] = df['MULTIREC'].map(d)
+#    df['MULTIREC'].fillna(False)
     
     # update status field
     sItems = status.items()
@@ -217,15 +223,18 @@ for afile in juris2Process:
     if len(df3.index) > 0:
         df3 = df3[['SORT', 'PSRCID', 'PIN', 'PLC', 'JURIS', 'ADDRESS', 'HOUSENO', 'PREFIX', 'STRNAME', 'STRTYPE', 'SUFFIX', 'ZIP', 'TYPE', 'PS', 'UNITS', 'BLDGS', 'RUNTYPE']]
         df3.to_csv(os.path.join(outDir2, 't'+ afile[:afile.rfind('.')] + '_geo.csv'), index = False)
+#        df3.to_csv(os.path.join(r'J:\Projects\Permits\15Permit\geocoding\prep\0inbox', 't'+ afile[:afile.rfind('.')] + '_geo.csv'), index = False) # when working with non-current year permits
     
     # prep df2 for export to 0all   
     # add macro row and reorder so macro row is below header
-    newRow = [999999, 'TEXT', 'TEXT', 'TRUE', 'TEXT', 'TEXT', 999999, 'TEXT', 'TEXT', 'TEXT', 'TEXT', 'TEXT', 'TEXT', '1/1/01', '1/1/01', 'TEXT', 'TEXT', 'TEXT',	999999, 9999999, 'TEXT', 'TEXT', 999999999, 'TEXT', 'TEXT', 'TEXT', 'TEXT', 'TEXT', 'TEXT', 'TEXT', 'TEXT', 999999, 'TEXT', 'TEXT', 'TEXT', 'TEXT', 'TEXT', 'TEXT', 'TEXT','TRUE','TEXT', 999999999, 999999999,'TEXT']
+    newRow = [999999, 'TEXT', 'TEXT', True, 'TEXT', 'TEXT', 999999, 'TEXT', 'TEXT', 'TEXT', 'TEXT', 'TEXT', 'TEXT', '1/1/01', '1/1/01', 'TEXT', 'TEXT', 'TEXT',	999999, 9999999, 'TEXT', 'TEXT', 999999999, 'TEXT', 'TEXT', 'TEXT', 'TEXT', 'TEXT', 'TEXT', 'TEXT', 'TEXT', 999999, 'TEXT', 'TEXT', 'TEXT', 'TEXT', 'TEXT', 'TEXT', 'TEXT',True,'TEXT', 999999999, 999999999,'TEXT']
     df2.loc[-1] = newRow
     df2.index = df2.index + 1
     df2 = df2.sort_index()
+    df2['MULTIREC'] = df2['MULTIREC'].map(d)
     
     # update macro row date strings to be date object
     df2.loc[0, 'ISSUED'] = datetime.datetime.strptime(df2.loc[0, 'ISSUED'], '%m/%d/%y').date()
     df2.loc[0, 'FINALED'] = datetime.datetime.strptime(df2.loc[0, 'FINALED'], '%m/%d/%y').date()    
     df2.to_excel(os.path.join(outDir1, afile), index = False)
+#    df2.to_excel(os.path.join(r'J:\Projects\Permits\15Permit\geocoding\prep\0all', afile), index = False) # when working with non-current year permits

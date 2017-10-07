@@ -36,7 +36,7 @@ addrDict = {
 addrDictKey = addrDict.keys() # list all keys (usaddress.LABELS) in AddrDict 
 
 # list of jurisdiction names
-jurisdictions = ['tukwila']# 'burien', 'tukwila', 'kenmore', 'wilkeson', 'yarrowpoint', 'sammamish'
+jurisdictions = ['redmond']#
 
 for juris in jurisdictions:
     # format jurisdiction lookup table

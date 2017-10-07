@@ -5,8 +5,8 @@ library(openxlsx)
 library(data.table)
 library(plyr)
 
-in.dir <- "J:/Projects/Permits/15Permit/data/1raw/snohomish"
-sno.file <- "incorp_res_issued2015.xlsx" 
+in.dir <- "J:/Projects/Permits/16Permit/data/1raw/snohomish"
+sno.file <- "incorp_issued16.xlsx" 
 lookup <- "J:/Projects/Permits/Admin/Lookup/template061.xlsx"
 
 lookup.file <- read.xlsx(lookup, sheet = 1, startRow = 1, colNames = TRUE, rowNames = FALSE, cols = NULL)
