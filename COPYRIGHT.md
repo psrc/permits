@@ -1,4 +1,4 @@
-Copyright (c) 2015 by the contributing authors of the Residential Permit Inventory project development team. See the COPYRIGHT file at the top-level directory of this distribution for detailed contributor information.
+Copyright (c) 2015 by the contributing authors of the [Residential Permit Inventory project](https://www.psrc.org/residential-building-permits) development team. See the COPYRIGHT file at the top-level directory of this distribution for detailed contributor information.
 
 See LICENSE file for licensing information for Residential Permit Inventory.
 
