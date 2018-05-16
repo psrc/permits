@@ -1,6 +1,6 @@
 # Residential Permits
 
-The Puget Sound Regional Council (PSRC) in our efforts to conduct an annual [Residential Building Permit Inventory](https://www.psrc.org/residential-building-permits) of the Central Puget Sound. This repository contains scripts needed to clean and standardize the permit files collected from Puget Sound region jurisidctions. 
+The Puget Sound Regional Council (PSRC) in our efforts to conduct an annual [Residential Building Permit Inventory](https://www.psrc.org/residential-building-permits) of the Central Puget Sound. This repository contains scripts needed to clean and standardize the permit files, which are collected from Puget Sound region jurisidctions. 
 
 # Data Collection 
 For 2017 residential permit inventory project, We seek a record for each residential building permit meeting the following criteria:	
