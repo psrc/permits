@@ -18,5 +18,5 @@ For 2017 residential permit inventory project, we seek a record for each residen
 The permit data serve as a valuable tool for tracking housing, land use, and growth management trends and policies. The permit data also supports the development of other PSRC datasets that are widely used by local planners and policy-makers in the areas of growth management and transportation. PSRC also geocodes the permit records to allow for mapping and analysis using geographic information systems (GIS) applications.
 
 # Public Data Record
-The data summery is avalable on [PSRC data and resource](https://www.psrc.org/residential-building-permits).
-For specific requests, you can request data by using [PSRC Data Request Form](https://www.psrc.org/data-and-resources/data-request-form)
+The data summary is avalable for download on [Residential Building Permit Summaries](https://www.psrc.org/residential-building-permits).
+For specific demand, you can request data by using [PSRC Data Request Form](https://www.psrc.org/data-and-resources/data-request-form)
