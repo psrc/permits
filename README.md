@@ -12,6 +12,8 @@ For 2017 residential permit inventory project, we seek a record for each residen
 *	Demolished/lost dwelling unit
 *	Conversion that alters the number of dwelling units in an existing structure
 
+# Scripts
+
 # Applications
 The permit data serve as a valuable tool for tracking housing, land use, and growth management trends and policies. The permit data also supports the development of other PSRC datasets that are widely used by local planners and policy-makers in the areas of growth management and transportation. PSRC also geocodes the permit records to allow for mapping and analysis using geographic information systems (GIS) applications.
 
