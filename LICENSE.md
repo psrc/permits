@@ -1,4 +1,4 @@
-Copyright 2015 by the contributing authors of the [Residential Building Permit](https://www.psrc.org/residential-building-permits) development team. See the COPYRIGHT file at the top-level directory of this distribution for detailed contributor information.
+Copyright 2018 by the contributing authors of the [Residential Building Permit](https://www.psrc.org/residential-building-permits) development team. See the COPYRIGHT file at the top-level directory of this distribution for detailed contributor information.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
