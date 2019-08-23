@@ -15,6 +15,9 @@ dict_cnty = {'33':'King'  ,
              '61':'Snohomish'}
 mf_types = ['MF1-2', 'MF3-4', 'MF5-9', 'MF10-19', 'MF20-49', 'MF50+']
 
+out_dir = r'J:\Projects\Permits\17Permit\data\4final\qc'
+out_dir_filename = 'pmt2017_draft.xlsx'
+
 def sqlconn(dbname):
     con = pyodbc.connect('DRIVER={SQL Server};SERVER=AWS-PROD-SQL\COHO;DATABASE=' + dbname + ';trusted_connection=true')
     return con
@@ -164,3 +167,8 @@ df_juris = create_juris_summary_table(rdf_sub)
 
 # create tract summary
 df_tract = create_tract_summary_table(rdf_sub)
+
+with pd.ExcelWriter(os.path.join(out_dir, out_dir_filename)) as writer:
+    df_cnty.to_excel(writer, sheet_name = 'county summary', index = False)
+    df_juris.to_excel(writer, sheet_name = 'jurisdiction summary', index = False)
+    df_tract.to_excel(writer, sheet_name = 'tract summary', index = False)
